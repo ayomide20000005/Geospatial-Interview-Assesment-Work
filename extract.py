@@ -3,11 +3,10 @@ import json
 import os
 import time
 
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter"
 
 HEADERS = {
-    "User-Agent": "GeospatialCrawlerAssignment/1.0",
-    "Content-Type": "application/x-www-form-urlencoded"
+    "User-Agent": "GeospatialCrawlerAssignment/1.0"
 }
 
 CITIES = {
