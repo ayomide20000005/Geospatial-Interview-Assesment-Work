@@ -5,6 +5,11 @@ import time
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
+HEADERS = {
+    "User-Agent": "GeospatialCrawlerAssignment/1.0",
+    "Content-Type": "application/x-www-form-urlencoded"
+}
+
 CITIES = {
     "lagos": {
         "south": 6.39,
@@ -33,14 +38,14 @@ RAW_DATA_DIR = "data/raw"
 
 def build_query(bbox, tag):
     key, value = tag.split("=")
-    query = f"""
-    [out:json][timeout:60];
-    (
-      node["{key}"="{value}"]({bbox['south']},{bbox['west']},{bbox['north']},{bbox['east']});
-      way["{key}"="{value}"]({bbox['south']},{bbox['west']},{bbox['north']},{bbox['east']});
-    );
-    out center;
-    """
+    query = (
+        "[out:json][timeout:60];"
+        "("
+        f'node["{key}"="{value}"]({bbox["south"]},{bbox["west"]},{bbox["north"]},{bbox["east"]});'
+        f'way["{key}"="{value}"]({bbox["south"]},{bbox["west"]},{bbox["north"]},{bbox["east"]});'
+        ");"
+        "out center;"
+    )
     return query
 
 
@@ -48,10 +53,15 @@ def fetch_data(city_name, bbox, category_name, tag):
     query = build_query(bbox, tag)
     print(f"Fetching {category_name} in {city_name}...")
 
-    response = requests.post(OVERPASS_URL, data={"data": query})
+    response = requests.post(
+        OVERPASS_URL,
+        data={"data": query},
+        headers=HEADERS
+    )
 
     if response.status_code != 200:
         print(f"Failed: {city_name} - {category_name} - status {response.status_code}")
+        print(f"Response: {response.text[:300]}")
         return None
 
     return response.json()
